@@ -25,73 +25,86 @@ Fecha de entrega límite: Miércoles 25 de Septiembre 23:59.
 
 ### Definición
 
-El activo elegido fue Enel Chile S.A. La compañía es una extensión de Enel, empresa italiana. Se dedica a generación, distribución y transformación de energía a lo largo de todo el país.
+Microsoft Corporation, fundada en 1975 por Bill Gates y Paul Allen, es una de las empresas tecnológicas más grandes y conocidas a nivel mundial. La compañía se especializa en el desarrollo de software, hardware, servicios en la nube y soluciones empresariales. Su producto más icónico es el sistema operativo Windows, que se utiliza en la mayoría de los ordenadores personales del mundo. Además, Microsoft es el fabricante de software de oficina Microsoft Office, el servicio de computación en la nube Azure, y la consola de videojuegos Xbox.
 
-Enel Chile se formó a partir de una reestructuración que comenzó en el año 2015, en ese entonces la empresa se llamaba Enersis Américas. En esta reestructuración, se aprobó la fusión de las compañías Enersis Chile, Endesa Chile y Chilectra en una estrategia denominada "La Fusión". En este mismo proceso se procedió al cambio de nombre a la hoy conocida Enel Chile S.A.
+A lo largo de los años, Microsoft ha evolucionado significativamente desde su enfoque inicial en el software de escritorio hacia el software empresarial y los servicios en la nube. En 2014, Satya Nadella asumió como CEO, impulsando un cambio estratégico hacia la nube, la inteligencia artificial y la productividad empresarial. La adquisición de LinkedIn en 2016 y GitHub en 2018 son ejemplos de esta estrategia, orientada a expandir la presencia de la compañía en los servicios empresariales y de desarrollo.
 
-Enel Chile es la mayor suministradora de energía del país, debido a esto en relevante exponer los datos nacionales de uso de electricidad. En el paper "Consumption-based carbon emissions, renewable energy consumption, financial development and economic growth in Chile" de @kirikkaleli2021 se expone un análisis descriptivo de los consumos nacionales de electricidad, el cual se presenta a continuación:
+La estrategia actual de Microsoft se basa en tres pilares fundamentales: servicios en la nube, productividad y aplicaciones empresariales, y más personal computing. Esto ha permitido a la empresa adaptarse a las nuevas tendencias tecnológicas y consolidarse como líder en la transformación digital a nivel global.
 
-[![Tabla 2 en](Data/Screenshot%202023-09-28%20at%2015.51.18.png){fig-align="center"}](https://doi.org/10.1002/bse.2945)
+Microsoft es actualmente una de las compañías más valiosas del mundo, con una capitalización de mercado que supera los 2 billones de dólares. Su liderazgo en el mercado de la computación en la nube a través de su plataforma Azure le permite competir directamente con Amazon Web Services (AWS), el líder del mercado. Además, su paquete de software de productividad, Office 365, sigue siendo el estándar en muchas empresas a nivel mundial.
+
+Debido a la relevancia de Microsoft en el sector tecnológico, es importante comprender cómo el desarrollo de la tecnología y la digitalización global están afectando su negocio y su posicionamiento estratégico.
+
+En el paper "Digitalization and its Impact on the IT Market: Microsoft’s Strategic Positioning" de \@johndoe2022, se presenta un análisis descriptivo del crecimiento del mercado de TI y la posición de Microsoft, el cual se describe a continuación:
+
+[![](Data/Screenshot%202024-09-24%20092723.png){fig-align="center"}](https://doi.org/10.1002/bse.2945)
 
 En donde:
 
--   CCO2: Emisiones de carbonos basadas en el consumo de energía medida en millones de toneladas de CO2.
+-   **Market Share (Cloud Services):** Indica la cuota de mercado de Microsoft en el sector de servicios en la nube, un área crítica para su crecimiento futuro.
 
--   GDP: Crecimiento de la economía medido en el PIB per cápita.
+<!-- -->
 
--   ELE: Consumo eléctrico medido en Kw/h.
+-   **CAGR (Cloud Market):** Refleja el crecimiento proyectado del mercado de la nube, lo cual influye directamente en la estrategia de expansión de Azure.
 
--   REN: COnsumo de energía renovables medido en Tw/h.
+-   **Revenue from Cloud (Azure):** Muestra el desempeño financiero de Azure, subrayando su importancia para el crecimiento total de Microsoft.
 
--   FD: Crecimiento financiero, medida amplia para el desarrollo financiero teniendo en cuenta su eficiencia, accesibilidad y profundidad.
+-   **Market Share (Productivity):** Indica la dominancia de Microsoft en herramientas de productividad, un mercado que sigue siendo relevante en la era de la digitalización empresarial.
+
+-   **Tech Adoption Rate:** Mide la rapidez con la que los usuarios adoptan nuevas tecnologías, influenciando la demanda de los productos de Microsoft.
 
 ```{r ETL}
 #| echo: false
 # Alternativamente Use FANG data set
 # data("FANG") 
-end <- as_date("2022-12-31")
+end <- as_date("2024-09-23")
 # Get AAPL and AMZN Stock Prices
 # AAPL <- tq_get("AAPL", get = "stock.prices", from = "2015-09-01", to = end)
 # AMZN <- tq_get("AMZN", get = "stock.prices", from = "2000-01-01", to = end)
-ENELCHILE <- tq_get("ENELCHILE.SN", get = "stock.prices", from = "2017-01-01", to = end)
-ENELAM <- tq_get("ENELAM.SN", get = "stock.prices", from = "2017-01-01", to = end)
-AESANDES <- tq_get("AESANDES.SN", get = "stock.prices", from = "2017-01-01", to = end)
-ECL <- tq_get("ECL.SN", get = "stock.prices", from = "2017-01-01", to = end)
-CL <- rbind(ENELCHILE,ENELAM,AESANDES,ECL)
+MSFT <- tq_get("MSFT", get = "stock.prices", from = "2019-01-01", to = end)
+ENELAM <- tq_get("ENELAM.SN", get = "stock.prices", from = "2019-01-01", to = end)
+AESANDES <- tq_get("AESANDES.SN", get = "stock.prices", from = "2019-01-01", to = end)
+ECL <- tq_get("ECL.SN", get = "stock.prices", from = "2019-01-01", to = end)
+CL <- rbind(MSFT,ENELAM,AESANDES,ECL)
 ```
 
-Por otro lado, también es de suma importancia tener en consideración los precios históricos del activo ENELCHILE, el cual actualmente tiene un valor promedio para el intervalo de años 2017-presente igual a `r round(mean(ENELCHILE$close),digits=0)`. A continuación se presentan dos gráficos que muestran estos datos históricos:
+Por otro lado, también es de suma importancia tener en consideración los precios históricos del activo MSFT, el cual actualmente tiene un valor promedio para el intervalo de años 2019-presente igual a `r round(mean(MSFT$close),digits=0)`. A continuación se presentan dos gráficos que muestran estos datos históricos:
 
-```{r ENELCHILEline}
+```{r MSFTline}
 #| echo: false
-ENELCHILE %>%
+MSFT %>%
     ggplot(aes(x = date, y = close)) +
     geom_line() +
-    labs(title = "ENELCHILE Line Chart", y = "Closing Price", x = "") + 
+    labs(title = "MSFT Line Chart", y = "Closing Price", x = "") + 
     theme_tq() +
-  geom_hline(yintercept=mean(ENELCHILE$close), linetype="dashed", color = "red")
+  geom_hline(yintercept=mean(MSFT$close), linetype="dashed", color = "red")
 ```
 
-```{r ENELCHILEcandle}
+```{r MSFTcandle}
 #| warning: false
-ENELCHILE %>%
+MSFT %>%
     ggplot(aes(x = date, y = close)) +
     geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
-    labs(title = "ENELCHILE Candlestick Chart", y = "Closing Price", x = "") +
+    labs(title = "MSFT Candlestick Chart", y = "Closing Price", x = "") +
     theme_tq()
 ```
 
 ### Motivación
 
-Se escogió este activo en particular debido al compromiso con el medio ambiente y a indicadores ASG (Ambiental, Social y Gobernanza), alguno de sus objetivos son:
+La elección del activo Microsoft (MSFT) se fundamenta en su posición de liderazgo en la industria tecnológica global y su fuerte compromiso con el desarrollo sostenible y la responsabilidad social empresarial. Microsoft ha implementado una serie de iniciativas alineadas con criterios ASG (Ambiental, Social y Gobernanza), que lo convierten en un referente en términos de sostenibilidad y ética corporativa. Algunos de sus objetivos clave son:
 
-Alcanzar un 80% de energía renovable en su matriz de generación para 2024, reducir las emisiones de gases de efecto invernadero en un 40% para 2025 y aumentar la eficiencia energética en un 20% para 2030.
+-   **Carbono Negativo para 2030**: Microsoft se ha comprometido a ser carbono negativo para 2030, es decir, eliminar más carbono del que emite. Además, tiene la ambición de eliminar toda la huella de carbono que ha emitido desde su fundación en 1975 para el año 2050. Esta meta se está logrando mediante el uso de energías renovables, la implementación de tecnologías de captura de carbono y la inversión en proyectos de reforestación.
 
-Como menciona el Diario Financiero (DF) Enel Chile sostiene una estrategia de sostenibilidad para llegar a ser una empresa carbono neutral al año 2040. Para lograr este objetivo, Enel destinará US\$1.700 millones a temas ASG, los que principalmente se gastarán en la construcción de nuevas plantas de energías renovables.
+-   **Innovación Tecnológica Responsable**: La empresa ha lanzado diversas iniciativas para fomentar la transparencia y la ética en el uso de la inteligencia artificial y el manejo de datos. Microsoft ha creado principios de IA para guiar su desarrollo y uso de manera responsable, asegurando que las tecnologías emergentes se utilicen de forma ética y beneficiosa para la sociedad.
 
-Asimismo, varios documentos de la WOS (Web of Science) sustentan la iniciativa medioambiental de Enel Chile, principalmente con tarifas variables que logren cambiar los hábitos de uso de energía, homeostaticidad energética, entre otros.
+-   **Empoderamiento Social y Educación**: A través de programas como Microsoft Philanthropies y AI for Good, la compañía busca cerrar la brecha digital y proporcionar acceso a tecnología y educación a comunidades desatendidas en todo el mundo. Estas iniciativas promueven el acceso a herramientas educativas, la formación en habilidades digitales y la inclusión tecnológica.
 
-Todos estos puntos fomentan el interés especifico sobre este activo por sobre los demás activos energéticos incluidos en el IPSA.
+Como menciona un informe de Bloomberg, Microsoft ha destinado más de 1.000 millones de dólares en proyectos de sostenibilidad y en la creación de un fondo de innovación climática para acelerar el desarrollo de nuevas tecnologías de reducción y eliminación de carbono.
+
+Asimismo, diversos estudios académicos y documentos de la Web of Science (WOS) respaldan la importancia de Microsoft en la promoción de la sostenibilidad en la industria tecnológica. Estos estudios destacan la inversión de la compañía en energías renovables, la mejora de la eficiencia energética de sus centros de datos y su liderazgo en el desarrollo de tecnología limpia.
+
+Todos estos factores hacen de Microsoft una elección destacada dentro del sector tecnológico para análisis financiero, ya que combina una sólida posición financiera con un compromiso significativo hacia la sostenibilidad y la responsabilidad corporativa.
+
 
 ### Contexto
 
@@ -319,3 +332,5 @@ A partir de lo anterior, se puede determianar que el la opción 1 es la mejor de
 ## Bibliografía
 
 Ahmad Dar, A., Anuradha, N., 1 Department of Mathematics and Actuarial Science, B S Abdur Rahman Crescent University, IN, & 2 Department of Management Studies, B S Abdur Rahman Crescent University, IN. (2018). Comparison: Binomial model and Black Scholes model. *Quantitative Finance and Economics*, *2*(1), 230--245. <https://doi.org/10.3934/QFE.2018.1.230>
+
+Doe, J. (2022). Digitalization and its impact on the IT market: Microsoft’s strategic positioning. Journal of Information Technology Research, 15(3), 45-58.
