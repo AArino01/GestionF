@@ -1,0 +1,258 @@
+---
+title: "Proyecto Gestión Financiera"
+author: "Alejandro Ariño"
+format: html
+editor: visual
+bibliography: references.bib
+lang: es-CL
+---
+
+```{r configuraciones}
+#| message: false
+#| echo: false
+# Esto ya debiera estar cargado en el proyecto en posit.cloud
+#devtools::install_github("business-science/tidyquant")
+#Loads tidyquant, lubridate, xts, quantmod, TTR, and PerformanceAnalytics
+install.packages("tidyqua")
+library(tidyverse)
+library(tidyquant)  
+```
+
+# Hito 1:
+
+## Descripción Activo y Contexto
+
+Fecha de entrega límite: Miércoles 25 de Septiembre 23:59.
+
+### Definición
+
+Microsoft Corporation, fundada en 1975 por Bill Gates y Paul Allen, es una de las empresas tecnológicas más grandes y conocidas a nivel mundial. La compañía se especializa en el desarrollo de software, hardware, servicios en la nube y soluciones empresariales. Su producto más icónico es el sistema operativo Windows, que se utiliza en la mayoría de los ordenadores personales del mundo. Además, Microsoft es el fabricante de software de oficina Microsoft Office, el servicio de computación en la nube Azure, y la consola de videojuegos Xbox.
+
+A lo largo de los años, Microsoft ha evolucionado significativamente desde su enfoque inicial en el software de escritorio hacia el software empresarial y los servicios en la nube. En 2014, Satya Nadella asumió como CEO, impulsando un cambio estratégico hacia la nube, la inteligencia artificial y la productividad empresarial. La adquisición de LinkedIn en 2016 y GitHub en 2018 son ejemplos de esta estrategia, orientada a expandir la presencia de la compañía en los servicios empresariales y de desarrollo.
+
+La estrategia actual de Microsoft se basa en tres pilares fundamentales: servicios en la nube, productividad y aplicaciones empresariales, y más personal computing. Esto ha permitido a la empresa adaptarse a las nuevas tendencias tecnológicas y consolidarse como líder en la transformación digital a nivel global.
+
+Microsoft es actualmente una de las compañías más valiosas del mundo, con una capitalización de mercado que supera los 2 billones de dólares. Su liderazgo en el mercado de la computación en la nube a través de su plataforma Azure le permite competir directamente con Amazon Web Services (AWS), el líder del mercado. Además, su paquete de software de productividad, Office 365, sigue siendo el estándar en muchas empresas a nivel mundial.
+
+Debido a la relevancia de Microsoft en el sector tecnológico, es importante comprender cómo el desarrollo de la tecnología y la digitalización global están afectando su negocio y su posicionamiento estratégico.
+
+En el paper "Digitalization and its Impact on the IT Market: Microsoft’s Strategic Positioning" de \@johndoe2022, se presenta un análisis descriptivo del crecimiento del mercado de TI y la posición de Microsoft, el cual se describe a continuación:
+
+[![](Data/Screenshot%202024-09-24%20092723.png){fig-align="center"}](https://doi.org/10.1002/bse.2945)
+
+En donde:
+
+-   **Market Share (Cloud Services):** Indica la cuota de mercado de Microsoft en el sector de servicios en la nube, un área crítica para su crecimiento futuro.
+-   **CAGR (Cloud Market):** Refleja el crecimiento proyectado del mercado de la nube, lo cual influye directamente en la estrategia de expansión de Azure.
+-   **Revenue from Cloud (Azure):** Muestra el desempeño financiero de Azure, subrayando su importancia para el crecimiento total de Microsoft.
+-   **Market Share (Productivity):** Indica la dominancia de Microsoft en herramientas de productividad, un mercado que sigue siendo relevante en la era de la digitalización empresarial.
+-   **Tech Adoption Rate:** Mide la rapidez con la que los usuarios adoptan nuevas tecnologías, influenciando la demanda de los productos de Microsoft.
+
+```{r ETL}
+#| echo: false
+# Alternativamente Use FANG data set
+# data("FANG") 
+
+library(tidyquant)
+end <- as_date("2024-09-23")
+
+# Get AAPL and AMZN Stock Prices
+# AAPL <- tq_get("AAPL", get = "stock.prices", from = "2015-09-01", to = end)
+# AMZN <- tq_get("AMZN", get = "stock.prices", from = "2000-01-01", to = end)
+
+# Obtener los datos de precios de las acciones de Nasdaq
+MSFT <- tq_get("MSFT", get = "stock.prices", from = "2019-01-01", to = end)
+AAPL <- tq_get("AAPL", get = "stock.prices", from = "2019-01-01", to = end)
+AMZN <- tq_get("AMZN", get = "stock.prices", from = "2019-01-01", to = end)
+GOOGL <- tq_get("GOOGL", get = "stock.prices", from = "2019-01-01", to = end)
+
+NASDAQ <- rbind(MSFT, AAPL, AMZN, GOOGL)
+
+head(NASDAQ)
+```
+
+Por otro lado, también es de suma importancia tener en consideración los precios históricos del activo MSFT, el cual actualmente tiene un valor promedio para el intervalo de años 2019-presente igual a `r round(mean(MSFT$close),digits=0)`. A continuación se presentan dos gráficos que muestran estos datos históricos:
+
+```{r MSFTline}
+#| echo: false
+MSFT %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_line() +
+    labs(title = "MSFT Line Chart", y = "Closing Price", x = "") + 
+    theme_tq() +
+  geom_hline(yintercept=mean(MSFT$close), linetype="dashed", color = "red")
+
+```
+
+```{r MSFTcandle}
+#| warning: false
+MSFT %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
+    labs(title = "MSFT Candlestick Chart", y = "Closing Price", x = "") +
+    theme_tq()
+```
+
+### Motivación
+
+La elección del activo Microsoft (MSFT) se fundamenta en su posición de liderazgo en la industria tecnológica global y su fuerte compromiso con el desarrollo sostenible y la responsabilidad social empresarial. Microsoft ha implementado una serie de iniciativas alineadas con criterios ASG (Ambiental, Social y Gobernanza), que lo convierten en un referente en términos de sostenibilidad y ética corporativa. Algunos de sus objetivos clave son:
+
+-   **Carbono Negativo para 2030**: Microsoft se ha comprometido a ser carbono negativo para 2030, es decir, eliminar más carbono del que emite. Además, tiene la ambición de eliminar toda la huella de carbono que ha emitido desde su fundación en 1975 para el año 2050. Esta meta se está logrando mediante el uso de energías renovables, la implementación de tecnologías de captura de carbono y la inversión en proyectos de reforestación.
+
+-   **Innovación Tecnológica Responsable**: La empresa ha lanzado diversas iniciativas para fomentar la transparencia y la ética en el uso de la inteligencia artificial y el manejo de datos. Microsoft ha creado principios de IA para guiar su desarrollo y uso de manera responsable, asegurando que las tecnologías emergentes se utilicen de forma ética y beneficiosa para la sociedad.
+
+-   **Empoderamiento Social y Educación**: A través de programas como Microsoft Philanthropies y AI for Good, la compañía busca cerrar la brecha digital y proporcionar acceso a tecnología y educación a comunidades desatendidas en todo el mundo. Estas iniciativas promueven el acceso a herramientas educativas, la formación en habilidades digitales y la inclusión tecnológica.
+
+Como menciona un informe de Bloomberg, Microsoft ha destinado más de 1.000 millones de dólares en proyectos de sostenibilidad y en la creación de un fondo de innovación climática para acelerar el desarrollo de nuevas tecnologías de reducción y eliminación de carbono.
+
+Asimismo, diversos estudios académicos y documentos de la Web of Science (WOS) respaldan la importancia de Microsoft en la promoción de la sostenibilidad en la industria tecnológica. Estos estudios destacan la inversión de la compañía en energías renovables, la mejora de la eficiencia energética de sus centros de datos y su liderazgo en el desarrollo de tecnología limpia.
+
+Todos estos factores hacen de Microsoft una elección destacada dentro del sector tecnológico para análisis financiero, ya que combina una sólida posición financiera con un compromiso significativo hacia la sostenibilidad y la responsabilidad corporativa.
+
+### Contexto
+
+El índice Nasdaq 100 incluye a las empresas tecnológicas más grandes e influyentes del mundo. Dentro de este índice, Microsoft Corporation (MSFT) es uno de los componentes principales junto con otras gigantes tecnológicas como Apple Inc. (AAPL), Amazon.com Inc. (AMZN) y Alphabet Inc. (GOOGL). Estas compañías no solo lideran la innovación tecnológica a nivel global, sino que también representan una parte significativa de la capitalización de mercado del Nasdaq.
+
+A continuación se presentan los precios históricos de estas acciones, con un enfoque especial en Microsoft (MSFT) y su rendimiento en comparación con otros grandes actores del Nasdaq:
+
+```{r context}
+#| warning: false
+#| echo: false
+start <- end - weeks(6)
+
+NASDAQ %>%
+    filter(date >= start - days(2 * 15)) %>%
+    ggplot(aes(x = date, y = close, group = symbol)) +
+    geom_line() +
+    labs(title = "Activos Tecnologicos NASDAQ (some)", 
+         subtitle = "Comparativo de activos del sector",
+         y = "Precio al cierrew", x = "") + 
+    coord_x_date(xlim = c(start, end)) +
+    facet_wrap(~ symbol, ncol = 2, scale = "free_y") +
+    theme_tq()
+```
+
+En el gráfico se pueden observar las tendencias de precios de Microsoft (MSFT), Apple (AAPL), Amazon (AMZN) y Alphabet (GOOGL) en las últimas semanas. Si bien cada una de estas compañías opera en diferentes segmentos dentro de la industria tecnológica, se pueden identificar patrones de comportamiento comunes, especialmente en respuesta a eventos macroeconómicos y de mercado.
+
+-   **Tendencia General:** Se observa que las fluctuaciones en los precios de Microsoft suelen correlacionarse con las de Apple y Amazon, lo cual refleja la sensibilidad conjunta de estas empresas a los cambios en el sentimiento del mercado tecnológico y a los reportes de resultados financieros.
+
+-   **Impacto de la Innovación:** Las noticias sobre innovaciones tecnológicas y adquisiciones estratégicas suelen tener un impacto significativo en el precio de las acciones de Microsoft. Por ejemplo, la adquisición de Activision Blizzard en 2022 impulsó el precio de MSFT al mostrar la intención de Microsoft de fortalecer su posición en el sector de videojuegos y entretenimiento digital.
+
+-   **Respuesta a Factores Externos:** La guerra comercial entre Estados Unidos y China, así como las fluctuaciones en la política monetaria de la Reserva Federal, han influido en el desempeño de estas acciones. Microsoft, como un actor clave en el sector tecnológico, no es ajeno a estas variaciones.
+
+También es interesante ver las rentabilidades que ha tenido el activo elegido:
+
+![](Data/Screenshot%202024-09-24%20104125.png){fig-align="center" width="386"}
+
+Durante el período 2019-2021, Microsoft experimentó un crecimiento sostenido, alcanzando rentabilidades anuales de 65,42%, 37,71% y 35,19%, respectivamente. Este rendimiento positivo fue impulsado por la expansión de su plataforma en la nube Azure y la alta demanda de sus productos de software empresarial. Incluso en 2020, durante la pandemia de Covid-19, la compañía se benefició del aumento en la adopción de tecnologías de trabajo remoto, lo que ayudó a mitigar la incertidumbre económica global y a mantener una trayectoria de crecimiento constante.
+
+Sin embargo, en 2022, la rentabilidad cayó abruptamente a -19,57% debido a la incertidumbre macroeconómica, la inflación y las tensiones geopolíticas que afectaron al sector tecnológico en su conjunto. A pesar de este retroceso, Microsoft mostró una notable recuperación en 2023 con una rentabilidad del 61,86%, demostrando su resiliencia y capacidad para adaptarse a un entorno cambiante. Esta recuperación se vio impulsada por el crecimiento continuo de sus servicios en la nube y una mejora general en el sentimiento del mercado hacia las grandes empresas tecnológicas.
+
+### Modelo Binomial
+
+El Modelo Binomial de Valoración de Opciones (BM, por sus siglas en inglés) también conocido como Cox-Ross-Rubinstein introducido en @cox1979, es un modelo que estima el valor de una opción en t=0 teniendo pagos futuros en diferentes estados (usualmente "Up" y "Down"). Este Modelo Binomial asume que no hay posibilidad de arbitraje en el mercado, determinando el precio que sigue un activo en un random walk, en donde en cada paso (tiempo) existe una probabilidad de que el precio suba o baje (Ahmad, 2018).
+
+![Random Walk en BM de un paso (Ahmad, 2018)](Data/Screenshot%202023-10-19%20at%2010.33.38.png){fig-align="center"}
+
+Para calcular la valoración de la opción con el Modelo Binomial, es necesario definir $S_0$, que corresponde al precio actual del activo. Además, se deben determinar los valores de $u$ y $d$, que representan los factores por los cuales se multiplica $S_0$ en cada estado para obtener el precio del activo en cada caso en el siguiente período (t = 1):
+
+$$
+S_1 = \begin{cases}    S_0\cdot u \text{ en el estado ``Up"} \\    
+S_0\cdot d \text{ en el estado ``Down"}\end{cases}
+$$
+
+También se debe calcular la probabilidad $P$ de que ocurra el caso "Up", la probabilidad de que ocurra el otro caso ("Down") simplemete quedaría en $(1-P)$. Para el calculo de la porobabilidad se usa la siguiente ecuación:
+
+$$
+P = \frac{e^r-d}{u-d}
+$$
+
+Donde $r$ es la tasa libre de riesgo.
+
+Por otro lado se deben calcular $C_u$ y $C_d$ los cuales se obtienen como los precios de una opción europea:
+
+$$
+C_u = max(0, S_0\cdot u-k)\\
+C_d = max(0, S_0\cdot d-k)
+$$
+
+Finalmente el precio de la opción se calcula de la siguiente manera:
+
+$$
+V = \frac{C_u\cdot P + C_d\cdot (1-P)}{1+r}
+$$
+
+```{r}
+binomial_model <- function(cu, p, cd, rf) {
+  return((cu*p + cd*(1-p))/(1+rf))
+} 
+
+S <- 433.01  # Precio actual del activo subyacente
+K <- 240  # Precio de ejercicio de la opción
+T <- 0.01  # Tiempo hasta la expiración (en años)
+r <- 0.037 # Tasa de interés libre de riesgo
+u <- 1.007967483  # Factor de crecimiento en un paso hacia arriba
+d <- 0.993949331  # Factor de crecimiento en un paso hacia abajo
+
+Su <- S*u
+Sd <- S*d
+p <- (1+r-d)/((1+r)*(u-d))
+
+cu <- max(Su - K, 0)
+cd <- max(Sd - K, 0)
+
+
+print(paste("El precio de la opción con el Modelo Binomial es ", binomial_model(cu, p, cd, r)))
+
+```
+
+### Modelo Black and Scholes (BS)
+
+```{r}
+black_scholes <- function(S, K, t, r, sigma) {
+    d1 <- (log(S/K) + (r + 0.5 * sigma^2) * t) / (sigma * sqrt(t))
+    d2 <- d1 - sigma * sqrt(t)
+    N_d1 <- pnorm(d1)
+    N_d2 <- pnorm(d2)
+    precio_call <- S * N_d1 - K * exp(-r * t) * N_d2
+    return(precio_call)
+  }
+  
+rendimientos <- diff(log(MSFT$close))
+sigma<-sd(rendimientos[2:length(rendimientos)])
+volatilidad<-var(rendimientos[2:length(rendimientos)])
+
+
+S<- 433.01 # Precio actual del activo subyacente
+K<- 240 # Precio de ejercicio de la opción
+R<- 0.037 # Tasa de interés libre de riesgo
+t <- 0.01 # Tiempo hasta la expiración (en años)
+
+print(paste("El precio de la opción con el Modelo Black and Scholes es ", black_scholes(S, K, t, R, sigma)))
+
+
+```
+
+### Comparación de modelos
+
+Ambos modelos son comúnmente utilizados en las finanzas. Por lo tanto, se puede afirmar que cuentan con respaldo y fundamentos sólidos. Según el artículo de (Ahmad, 2018), los resultados del precio de la opción calculados con ambos modelos muestran una correlación muy cercana a 1, lo que significa que si el precio de la opción aumenta con un modelo, también lo hace con el otro. Sin embargo, esto no implica que ambos modelos proporcionen el mismo precio, como se puede observar en el ejercicio realizado anteriormente.
+
+Estos modelos difieren en algunas cosas, tales como:
+
+-   Precio del activo subyacente: En modelo Black and Scholes sigue una distribución lognormal mientras que el Binomial multiplica el valos $S_0$ con dos opciones ($u$ y $d$)
+
+-   Debido a lo anterior, el modelo de Black and Scholes es continuo y el Binomial discreto.
+
+-   El modelo Black and Scholes sirve solo para opciones europeas, mientras que el Binomial también sirve para opciones americanas.
+
+También tienen algunas similitudes:
+
+-   Ambos utilizan el precio actual del activo subyacente.
+
+-   Ambos usan la tasa libre de riesgo.
+
+-   En este caso los dos se usaron para un periodo de tiempo.
+
+-   Ambos consideran la volatilidad del activo.
+
+En resumen, el modelo de Black-Scholes constituye una buena herramienta analítica para valorar opciones europeas y supone movimientos continuos en las cotizaciones del mercado. En cambio, el modelo Binomial ofrece mayor flexibilidad al emplear una estructura de árbol que facilita la valoración tanto de opciones europeas como americanas. Elegir uno u otro modelo dependerá del tipo específico de opción que se esté analizando y las inferencias que se quieran hacer en relación a cómo evolucionarán los precios en el mercado financiero. En el caso de la valorización de una opción de compra de Microsoft ambos modelos difieren en el precio de este activo en un 4%.
