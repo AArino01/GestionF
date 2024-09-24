@@ -57,15 +57,23 @@ En donde:
 #| echo: false
 # Alternativamente Use FANG data set
 # data("FANG") 
+
+library(tidyquant)
 end <- as_date("2024-09-23")
+
 # Get AAPL and AMZN Stock Prices
 # AAPL <- tq_get("AAPL", get = "stock.prices", from = "2015-09-01", to = end)
 # AMZN <- tq_get("AMZN", get = "stock.prices", from = "2000-01-01", to = end)
+
+# Obtener los datos de precios de las acciones de Nasdaq
 MSFT <- tq_get("MSFT", get = "stock.prices", from = "2019-01-01", to = end)
-ENELAM <- tq_get("ENELAM.SN", get = "stock.prices", from = "2019-01-01", to = end)
-AESANDES <- tq_get("AESANDES.SN", get = "stock.prices", from = "2019-01-01", to = end)
-ECL <- tq_get("ECL.SN", get = "stock.prices", from = "2019-01-01", to = end)
-CL <- rbind(MSFT,ENELAM,AESANDES,ECL)
+AAPL <- tq_get("AAPL", get = "stock.prices", from = "2019-01-01", to = end)
+AMZN <- tq_get("AMZN", get = "stock.prices", from = "2019-01-01", to = end)
+GOOGL <- tq_get("GOOGL", get = "stock.prices", from = "2019-01-01", to = end)
+
+NASDAQ <- rbind(MSFT, AAPL, AMZN, GOOGL)
+
+head(NASDAQ)
 ```
 
 Por otro lado, también es de suma importancia tener en consideración los precios históricos del activo MSFT, el cual actualmente tiene un valor promedio para el intervalo de años 2019-presente igual a `r round(mean(MSFT$close),digits=0)`. A continuación se presentan dos gráficos que muestran estos datos históricos:
@@ -105,7 +113,6 @@ Asimismo, diversos estudios académicos y documentos de la Web of Science (WOS) 
 
 Todos estos factores hacen de Microsoft una elección destacada dentro del sector tecnológico para análisis financiero, ya que combina una sólida posición financiera con un compromiso significativo hacia la sostenibilidad y la responsabilidad corporativa.
 
-
 ### Contexto
 
 El IPSA tiene 4 componentes de la industria de energía, Enel Chile S.A, Enel Latinoamerica S.A, Engie Energia Chile S.A y AES Gener SA. Los primeros 2 corresponden a la empresa italiana Enel. A continuación se presentan los precios históricos de cada una de estas acciones:
@@ -115,11 +122,11 @@ El IPSA tiene 4 componentes de la industria de energía, Enel Chile S.A, Enel La
 #| echo: false
 start <- end - weeks(6)
 
-CL %>%
+NASDAQ %>%
     filter(date >= start - days(2 * 15)) %>%
     ggplot(aes(x = date, y = close, group = symbol)) +
     geom_line() +
-    labs(title = "Activos Energía IPSA", 
+    labs(title = "Activos Tecnologicos NASDAQ (some)", 
          subtitle = "Comparativo de activos del sector",
          y = "Precio al cierrew", x = "") + 
     coord_x_date(xlim = c(start, end)) +
@@ -332,5 +339,3 @@ A partir de lo anterior, se puede determianar que el la opción 1 es la mejor de
 ## Bibliografía
 
 Ahmad Dar, A., Anuradha, N., 1 Department of Mathematics and Actuarial Science, B S Abdur Rahman Crescent University, IN, & 2 Department of Management Studies, B S Abdur Rahman Crescent University, IN. (2018). Comparison: Binomial model and Black Scholes model. *Quantitative Finance and Economics*, *2*(1), 230--245. <https://doi.org/10.3934/QFE.2018.1.230>
-
-Doe, J. (2022). Digitalization and its impact on the IT market: Microsoft’s strategic positioning. Journal of Information Technology Research, 15(3), 45-58.
